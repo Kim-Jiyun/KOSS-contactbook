@@ -92,21 +92,6 @@ app.get('/contacts/:pageId', function(request, response) {
   });
 });
 
-//연락처 삭제
-app.post('/contacts/:pageId/delete', function(request, response){
-  var body = '';
-  request.on('data', function(data){
-      body = body + data;
-  });
-  request.on('end', function(){
-      var post = qs.parse(body);
-      var id = post.id;
-      var filteredId = path.parse(id).base;
-      fs.unlink(`data/${filteredId}`, function(error){
-        response.redirect('/contacts');
-      })
-  });
-});
 
 //특정 연락처 수정 폼 제공
 app.get('/contacts/:pageId/edit', function(request, response){
@@ -140,14 +125,29 @@ app.post('/contacts/:pageId', function(request, response){
   request.on('end', function(){
       var post = qs.parse(body);
       var id = post.id;
-      var title = post.title;
-      var name = post.name;
+      var title = post.name;
       var description = post.description;
       fs.rename(`data/${id}`, `data/${title}`, function(error){
-        fs.writeFile(`data/${name}`, `${description}`, 'utf8', function(err){
+        fs.writeFile(`data/${title}`, `${description}`, 'utf8', function(err){
           response.redirect(`/?id=${title}`);
         })
       });
+  });
+});
+
+//연락처 삭제
+app.post('/contacts/:pageId/delete', function(request, response){
+  var body = '';
+  request.on('data', function(data){
+      body = body + data;
+  });
+  request.on('end', function(){
+      var post = qs.parse(body);
+      var id = post.id;
+      var filteredId = path.parse(id).base;
+      fs.unlink(`data/${filteredId}`, function(error){
+        response.redirect('/contacts');
+      })
   });
 });
 
